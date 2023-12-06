@@ -1,6 +1,7 @@
 from PIL import Image
 import numpy as np
 from scipy.signal import convolve2d
+from scipy.ndimage import binary_dilation, binary_erosion
 import matplotlib.pyplot as plt
 
 def detect_edges(image):
@@ -27,50 +28,64 @@ def detect_edges(image):
     
     return edge_image
 
-def apply_threshold(edge_image, threshold_value=50):
-    # Convert edge image to numpy array if it's not already
-    edge_array = np.array(edge_image)
+def apply_threshold(edge_array, threshold_value=30):
+   # Apply threshold on the numpy array
+    binary_array = np.where(edge_array > threshold_value, 1, 0).astype('uint8')  # Binary image has values 0 and 1
     
-    # Apply threshold
-    binary_image = np.where(edge_array > threshold_value, 255, 0).astype('uint8')
+    return binary_array
 
-    # Convert back to PIL image
-    binary_image = Image.fromarray(binary_image)
+def morphological_operations(binary_array, iterations=2):
+    # Apply dilation
+    dilated_image = binary_dilation(binary_array, iterations=iterations)
+    # Apply erosion
+    eroded_image = binary_erosion(dilated_image, iterations=iterations)
     
-    return binary_image
+    return eroded_image
 
 # Load your image
 image_path = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\GeorgeBush\\train\\George_W_Bush_0006.jpg"
 image = Image.open(image_path)
 
-# Detect edges
-edge_detected_image = detect_edges(image)
+# Detect edges and convert to numpy array for processing
+edge_detected_array = np.array(detect_edges(image))
 
-# Apply threshold to the edge-detected image
-threshold_value = 30  # We might need to adjust this value based on your image
-binary_image = apply_threshold(edge_detected_image, threshold_value)
+# Apply threshold to the edge-detected numpy array
+binary_array = apply_threshold(edge_detected_array, threshold_value=30)
+
+# Apply morphological operations to the binary numpy array
+morph_array = morphological_operations(binary_array, iterations=1)
+
+# Convert numpy arrays back to PIL images for display
+binary_image = Image.fromarray(binary_array * 255)  # Scale binary image back to [0, 255]
+morph_image = Image.fromarray(morph_array * 255)  # Scale morphological image back to [0, 255]
 
 # Display the results
-plt.figure(figsize=(15, 7))  # Adjust the figure size as needed
+plt.figure(figsize=(20, 10))
 
-# Subplot for the original image
-plt.subplot(1, 3, 1)
+# Original image
+plt.subplot(1, 4, 1)
 plt.imshow(image)
 plt.title('Original Image')
 plt.axis('off')
 
-# Subplot for the edge-detected image
-plt.subplot(1, 3, 2)
-plt.imshow(edge_detected_image, cmap='gray')
+# Edge Detected Image
+plt.subplot(1, 4, 2)
+plt.imshow(edge_detected_array, cmap='gray')
 plt.title('Edge Detected Image')
 plt.axis('off')
 
-# Subplot for the binary image after thresholding
-plt.subplot(1, 3, 3)
+# Binary Image After Thresholding
+plt.subplot(1, 4, 3)
 plt.imshow(binary_image, cmap='gray')
 plt.title('Binary Image After Thresholding')
 plt.axis('off')
 
-plt.tight_layout()  # Adjust subplots to fit into the figure area.
+# Morphological Operations
+plt.subplot(1, 4, 4)
+plt.imshow(morph_image, cmap='gray')
+plt.title('Morphological Operations')
+plt.axis('off')
+
+plt.tight_layout()
 plt.show()
 
