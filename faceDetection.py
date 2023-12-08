@@ -134,37 +134,37 @@ plt.figure(figsize=(15, 10))  # Adjust the figure size as needed
 # Original image
 plt.subplot(2, 3, 1)
 plt.imshow(image)
-plt.title('Original Image')
+plt.title('1. Original Image')
 plt.axis('off')
 
 # Edge Detected Image
 plt.subplot(2, 3, 2)
 plt.imshow(edge_detected_array, cmap='gray')
-plt.title('Edge Detected Image')
+plt.title('2. Edge Detected Image')
 plt.axis('off')
 
 # Binary Image After Thresholding
 plt.subplot(2, 3, 3)
 plt.imshow(binary_image, cmap='gray')
-plt.title('Binary Image After Thresholding')
+plt.title('3. Binary Image After Thresholding')
 plt.axis('off')
 
 # Morphological Operations
 plt.subplot(2, 3, 4)
 plt.imshow(morph_image, cmap='gray')
-plt.title('Morphological Operations')
+plt.title('4. Morphological Operations')
 plt.axis('off')
 
 # Segmented Face Region
 plt.subplot(2, 3, 5)
 plt.imshow(face_mask_image, cmap='gray')
-plt.title('Segmented Face Region')
+plt.title('5. Segmented Face Region')
 plt.axis('off')
 
 # Resized Face (black and white)
 plt.subplot(2, 3, 6)
 plt.imshow(resized_face_bw, cmap='gray')
-plt.title('Resized Face')
+plt.title('6. Resized Face')
 plt.axis('off')
 
 plt.tight_layout()
