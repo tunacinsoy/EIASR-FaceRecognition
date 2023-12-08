@@ -128,41 +128,41 @@ face_mask_image = Image.fromarray((face_mask * 255).astype('uint8'))
 # and `face_mask` is the binary mask of the face region
 resized_face_bw = crop_and_resize_face(image, face_mask)
 
-# Display the results
-plt.figure(figsize=(25, 10))  # Adjust the figure size as needed
+# Display the results in a grid with 2 rows and 3 columns
+plt.figure(figsize=(15, 10))  # Adjust the figure size as needed
 
 # Original image
-plt.subplot(1, 6, 1)
+plt.subplot(2, 3, 1)
 plt.imshow(image)
 plt.title('Original Image')
 plt.axis('off')
 
 # Edge Detected Image
-plt.subplot(1, 6, 2)
+plt.subplot(2, 3, 2)
 plt.imshow(edge_detected_array, cmap='gray')
 plt.title('Edge Detected Image')
 plt.axis('off')
 
 # Binary Image After Thresholding
-plt.subplot(1, 6, 3)
+plt.subplot(2, 3, 3)
 plt.imshow(binary_image, cmap='gray')
 plt.title('Binary Image After Thresholding')
 plt.axis('off')
 
 # Morphological Operations
-plt.subplot(1, 6, 4)
+plt.subplot(2, 3, 4)
 plt.imshow(morph_image, cmap='gray')
 plt.title('Morphological Operations')
 plt.axis('off')
 
 # Segmented Face Region
-plt.subplot(1, 6, 5)
+plt.subplot(2, 3, 5)
 plt.imshow(face_mask_image, cmap='gray')
 plt.title('Segmented Face Region')
 plt.axis('off')
 
 # Resized Face (black and white)
-plt.subplot(1, 6, 6)
+plt.subplot(2, 3, 6)
 plt.imshow(resized_face_bw, cmap='gray')
 plt.title('Resized Face')
 plt.axis('off')
