@@ -107,7 +107,7 @@ def crop_and_resize_face(original_image, face_mask, output_size=(64, 64)):
 # image = Image.open(image_path)
 
 # Define the directory path with a pattern to match all images
-pattern = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\subjects\\George_W_Bush\\*.jpg"
+pattern = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\subjects\\Vladimir_Putin\\*.jpg"
 
 for image_path in glob.glob(pattern):
     # Load the image
@@ -147,7 +147,7 @@ for image_path in glob.glob(pattern):
     new_name = "{}_bw{}".format(name, ext)
 
     # Specify the directory where you want to save the new image
-    output_directory = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\outputs\\George_W_Bush"
+    output_directory = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\outputs\\Vladimir_Putin"
     new_image_path = os.path.join(output_directory, new_name)
 
     # Save the image using the new path
