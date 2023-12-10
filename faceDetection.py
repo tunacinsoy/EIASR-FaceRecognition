@@ -6,6 +6,7 @@ from scipy.ndimage import binary_dilation, binary_erosion
 from scipy.ndimage import label
 import matplotlib.pyplot as plt
 import os
+import glob
 
 def detect_edges(image):
     # Convert to grayscale
@@ -102,89 +103,98 @@ def crop_and_resize_face(original_image, face_mask, output_size=(64, 64)):
     return resized_face_bw
 
 # Load your image
-image_path = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\GeorgeBush\\train\\George_W_Bush_0035.jpg"
-image = Image.open(image_path)
+# image_path = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\GeorgeBush\\test\\George_W_Bush_0517.jpg"
+# image = Image.open(image_path)
 
-# Detect edges and convert to numpy array for processing
-edge_detected_array = np.array(detect_edges(image))
+# Define the directory path with a pattern to match all images
+pattern = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\GeorgeBush\\train\\*.jpg"
 
-# Apply threshold to the edge-detected numpy array
-binary_array = apply_threshold(edge_detected_array, threshold_value=30)
+for image_path in glob.glob(pattern):
+    # Load the image
+    image = Image.open(image_path)
 
-# Apply morphological operations to the binary numpy array
-morph_array = morphological_operations(binary_array, iterations=2)
+    # Detect edges and convert to numpy array for processing
+    edge_detected_array = np.array(detect_edges(image))
 
-# Convert numpy arrays back to PIL images for display
-binary_image = Image.fromarray(binary_array * 255)  # Scale binary image back to [0, 255]
-morph_image = Image.fromarray(morph_array * 255)  # Scale morphological image back to [0, 255]
+    # Apply threshold to the edge-detected numpy array
+    binary_array = apply_threshold(edge_detected_array, threshold_value=30)
 
-# Apply the segmentation to find the face region
-face_mask = segment_face(morph_array)
+    # Apply morphological operations to the binary numpy array
+    morph_array = morphological_operations(binary_array, iterations=2)
 
-# Convert the face mask back to PIL image for display
-face_mask_image = Image.fromarray((face_mask * 255).astype('uint8'))
+    # Convert numpy arrays back to PIL images for display
+    binary_image = Image.fromarray(binary_array * 255)  # Scale binary image back to [0, 255]
+    morph_image = Image.fromarray(morph_array * 255)  # Scale morphological image back to [0, 255]
 
-# Assuming the original image is already loaded as `image`
-# and `face_mask` is the binary mask of the face region
-resized_face_bw = crop_and_resize_face(image, face_mask)
+    # Apply the segmentation to find the face region
+    face_mask = segment_face(morph_array)
+
+    # Convert the face mask back to PIL image for display
+    face_mask_image = Image.fromarray((face_mask * 255).astype('uint8'))
+
+    # Assuming the original image is already loaded as `image`
+    # and `face_mask` is the binary mask of the face region
+    resized_face_bw = crop_and_resize_face(image, face_mask)
+
+    #Saving the output image
+
+    # Assuming `image_path` holds the path to the original image
+    # Extract the base name without the extension
+    base_name = os.path.basename(image_path)
+    name, ext = os.path.splitext(base_name)
+
+    # Create the new name by appending "_bw" to the original name
+    new_name = "{}_bw{}".format(name, ext)
+
+    # Specify the directory where you want to save the new image
+    output_directory = "C:\\Users\\tcins\\vscode-workspace\\outputs"
+    new_image_path = os.path.join(output_directory, new_name)
+
+    # Save the image using the new path
+    resized_face_bw.save(new_image_path)
+
+    print(f"Image saved as {new_image_path}")
 
 # Display the results in a grid with 2 rows and 3 columns
 plt.figure(figsize=(15, 10))  # Adjust the figure size as needed
 
-# Original image
-plt.subplot(2, 3, 1)
-plt.imshow(image)
-plt.title('1. Original Image')
-plt.axis('off')
+# # Original image
+# plt.subplot(2, 3, 1)
+# plt.imshow(image)
+# plt.title('1. Original Image')
+# plt.axis('off')
 
-# Edge Detected Image
-plt.subplot(2, 3, 2)
-plt.imshow(edge_detected_array, cmap='gray')
-plt.title('2. Edge Detected Image')
-plt.axis('off')
+# # Edge Detected Image
+# plt.subplot(2, 3, 2)
+# plt.imshow(edge_detected_array, cmap='gray')
+# plt.title('2. Edge Detected Image')
+# plt.axis('off')
 
-# Binary Image After Thresholding
-plt.subplot(2, 3, 3)
-plt.imshow(binary_image, cmap='gray')
-plt.title('3. Binary Image After Thresholding')
-plt.axis('off')
+# # Binary Image After Thresholding
+# plt.subplot(2, 3, 3)
+# plt.imshow(binary_image, cmap='gray')
+# plt.title('3. Binary Image After Thresholding')
+# plt.axis('off')
 
-# Morphological Operations
-plt.subplot(2, 3, 4)
-plt.imshow(morph_image, cmap='gray')
-plt.title('4. Morphological Operations')
-plt.axis('off')
+# # Morphological Operations
+# plt.subplot(2, 3, 4)
+# plt.imshow(morph_image, cmap='gray')
+# plt.title('4. Morphological Operations')
+# plt.axis('off')
 
-# Segmented Face Region
-plt.subplot(2, 3, 5)
-plt.imshow(face_mask_image, cmap='gray')
-plt.title('5. Segmented Face Region')
-plt.axis('off')
+# # Segmented Face Region
+# plt.subplot(2, 3, 5)
+# plt.imshow(face_mask_image, cmap='gray')
+# plt.title('5. Segmented Face Region')
+# plt.axis('off')
 
-# Resized Face (black and white)
-plt.subplot(2, 3, 6)
-plt.imshow(resized_face_bw, cmap='gray')
-plt.title('6. Resized Face')
-plt.axis('off')
+# # Resized Face (black and white)
+# plt.subplot(2, 3, 6)
+# plt.imshow(resized_face_bw, cmap='gray')
+# plt.title('6. Resized Face')
+# plt.axis('off')
 
-plt.tight_layout()
-plt.show()
+# plt.tight_layout()
+# plt.show()
 
-#Saving the output image
 
-# Assuming `image_path` holds the path to the original image
-# Extract the base name without the extension
-base_name = os.path.basename(image_path)
-name, ext = os.path.splitext(base_name)
-
-# Create the new name by appending "_bw" to the original name
-new_name = "{}_bw{}".format(name, ext)
-
-# Specify the directory where you want to save the new image
-output_directory = "C:\\Users\\tcins\\vscode-workspace\\outputs"
-new_image_path = os.path.join(output_directory, new_name)
-
-# Save the image using the new path
-resized_face_bw.save(new_image_path)
-
-print(f"Image saved as {new_image_path}")
