@@ -9,6 +9,7 @@ import os
 import glob
 
 def detect_edges(image):
+
     # Convert to grayscale
     gray_image = image.convert('L')
     
@@ -83,7 +84,7 @@ def crop_and_resize_face(original_image, face_mask, output_size=(64, 64)):
     width = maxc - minc
     
     # Adjust the bounding box to exclude the neck and refine the top of the head
-    # These ratios might need to be adjusted for your particular images
+    # These ratios might need to be adjusted
     vertical_reduce_ratio = 0.20  # Reduce from both top and bottom
     horizontal_reduce_ratio = 0.25  # Reduce from both sides
     new_minr = int(minr + height * vertical_reduce_ratio)
@@ -102,14 +103,15 @@ def crop_and_resize_face(original_image, face_mask, output_size=(64, 64)):
     
     return resized_face_bw
 
-# Load your image
+# Load image
 # image_path = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\GeorgeBush\\test\\George_W_Bush_0517.jpg"
 # image = Image.open(image_path)
 
-# Define the directory path with a pattern to match all images
+# Directory path with a pattern to match all images
 pattern = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\subjects\\Vladimir_Putin\\*.jpg"
 
 for image_path in glob.glob(pattern):
+
     # Load the image
     image = Image.open(image_path)
 
@@ -132,13 +134,11 @@ for image_path in glob.glob(pattern):
     # Convert the face mask back to PIL image for display
     face_mask_image = Image.fromarray((face_mask * 255).astype('uint8'))
 
-    # Assuming the original image is already loaded as `image`
     # and `face_mask` is the binary mask of the face region
     resized_face_bw = crop_and_resize_face(image, face_mask)
 
     #Saving the output image
 
-    # Assuming `image_path` holds the path to the original image
     # Extract the base name without the extension
     base_name = os.path.basename(image_path)
     name, ext = os.path.splitext(base_name)
@@ -156,7 +156,7 @@ for image_path in glob.glob(pattern):
     print(f"Image saved as {new_image_path}")
 
 # Display the results in a grid with 2 rows and 3 columns
-plt.figure(figsize=(15, 10))  # Adjust the figure size as needed
+plt.figure(figsize=(15, 10)) 
 
 # # Original image
 # plt.subplot(2, 3, 1)
