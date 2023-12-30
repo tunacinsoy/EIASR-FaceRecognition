@@ -31,7 +31,7 @@ def process_images(input_directory, output_directory):
                         print(f"Image {filename} of {person_name} is not suitable.")
 
 # Replace these paths with your input and output directories
-input_directory = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\outputs"
-output_directory = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\suitableOutputs"
+input_directory = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\outputsOfEnhanced"
+output_directory = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\suitableOutputsOfEnhanced"
 
 process_images(input_directory, output_directory)
