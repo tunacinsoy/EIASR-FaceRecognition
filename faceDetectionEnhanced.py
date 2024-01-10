@@ -125,7 +125,7 @@ def crop_and_resize_face(original_image, face_mask, output_size=(64, 64)):
     return resized_face_bw
 
 # Directory path with a pattern to match all images
-pattern = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\subjects\\Alvaro_Uribe\\*.jpg"
+pattern = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\subjects\\Vladimir_Putin\\*.jpg"
 
 for image_path in glob.glob(pattern):
 
@@ -174,7 +174,7 @@ for image_path in glob.glob(pattern):
     new_name = "{}_bw{}".format(name, ext)
 
     # Specify the directory where you want to save the new image
-    output_directory = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\outputsOfEnhanced\\Alvaro_Uribe"
+    output_directory = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\outputsOfEnhanced\\Vladimir_Putin"
     new_image_path = os.path.join(output_directory, new_name)
 
     # Save the image using the new path
@@ -182,46 +182,46 @@ for image_path in glob.glob(pattern):
 
     print(f"Image saved as {new_image_path}")
 
-# Display the results in a grid with 2 rows and 3 columns
-plt.figure(figsize=(15, 10)) 
+# # Display the results in a grid with 2 rows and 3 columns
+# plt.figure(figsize=(15, 10)) 
 
-# Original image
-plt.subplot(2, 3, 1)
-plt.imshow(image)
-plt.title('1. Original Image')
-plt.axis('off')
+# # Original image
+# plt.subplot(2, 3, 1)
+# plt.imshow(image)
+# plt.title('1. Original Image')
+# plt.axis('off')
 
-# Edge Detected Image
-plt.subplot(2, 3, 2)
-plt.imshow(edge_detected_array, cmap='gray')
-plt.title('2. Edge Detected Image')
-plt.axis('off')
+# # Edge Detected Image
+# plt.subplot(2, 3, 2)
+# plt.imshow(edge_detected_array, cmap='gray')
+# plt.title('2. Edge Detected Image')
+# plt.axis('off')
 
-# Binary Image After Thresholding
-plt.subplot(2, 3, 3)
-plt.imshow(binary_image, cmap='gray')
-plt.title('3. Binary Image After Thresholding')
-plt.axis('off')
+# # Binary Image After Thresholding
+# plt.subplot(2, 3, 3)
+# plt.imshow(binary_image, cmap='gray')
+# plt.title('3. Binary Image After Thresholding')
+# plt.axis('off')
 
-# Morphological Operations
-plt.subplot(2, 3, 4)
-plt.imshow(morph_image, cmap='gray')
-plt.title('4. Morphological Operations')
-plt.axis('off')
+# # Morphological Operations
+# plt.subplot(2, 3, 4)
+# plt.imshow(morph_image, cmap='gray')
+# plt.title('4. Morphological Operations')
+# plt.axis('off')
 
-# Segmented Face Region
-plt.subplot(2, 3, 5)
-plt.imshow(face_mask_image, cmap='gray')
-plt.title('5. Segmented Face Region')
-plt.axis('off')
+# # Segmented Face Region
+# plt.subplot(2, 3, 5)
+# plt.imshow(face_mask_image, cmap='gray')
+# plt.title('5. Segmented Face Region')
+# plt.axis('off')
 
-# Resized Face (black and white)
-plt.subplot(2, 3, 6)
-plt.imshow(resized_face_bw, cmap='gray')
-plt.title('6. Resized Face')
-plt.axis('off')
+# # Resized Face (black and white)
+# plt.subplot(2, 3, 6)
+# plt.imshow(resized_face_bw, cmap='gray')
+# plt.title('6. Resized Face')
+# plt.axis('off')
 
-plt.tight_layout()
-plt.show()
+# plt.tight_layout()
+# plt.show()
 
 

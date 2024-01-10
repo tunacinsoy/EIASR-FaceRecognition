@@ -14,6 +14,9 @@ def contains_only_face(image_path):
     return len(faces) == 1
 
 def process_images(input_directory, output_directory):
+    totalCountOfImages = 0
+    notSuitableImages = 0
+
     for person_name in os.listdir(input_directory):
         person_path = os.path.join(input_directory, person_name)
         if os.path.isdir(person_path):
@@ -23,15 +26,22 @@ def process_images(input_directory, output_directory):
 
             for filename in os.listdir(person_path):
                 if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+                    totalCountOfImages += 1
                     image_path = os.path.join(person_path, filename)
                     if is_image_64x64_grayscale(image_path) and contains_only_face(image_path):
                         print(f"Image {filename} of {person_name} is suitable.")
                         shutil.copy(image_path, output_person_path)
                     else:
                         print(f"Image {filename} of {person_name} is not suitable.")
+                        notSuitableImages += 1
 
-# Replace these paths with your input and output directories
+    return notSuitableImages, totalCountOfImages
+
+# Input and output directories
 input_directory = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\outputsOfEnhanced"
 output_directory = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\suitableOutputsOfEnhanced"
 
-process_images(input_directory, output_directory)
+totalCountOfNotSuitableImages, totalCountOfImages = process_images(input_directory, output_directory)
+print(f"Total Images: {totalCountOfImages}, Not Suitable Images: {totalCountOfNotSuitableImages}")
+print(f"Ratio of Not Suitable Images: %{totalCountOfNotSuitableImages * 100 / totalCountOfImages}")
+print(f"Ratio of Suitable Images: %{(totalCountOfImages - totalCountOfNotSuitableImages) * 100 / totalCountOfImages}")
