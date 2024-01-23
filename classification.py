@@ -47,10 +47,34 @@ def plot_confusion_matrix(actual_labels, predicted_labels):
     plt.ylabel('Actual Labels')
     plt.show()
 
+def print_dynamic_classification_info(actual_labels, predicted_labels, training_labels):
+    training_subjects = set(training_labels)
+    new_subjects_ids = {}
+    success = 0
+    for i in range(len(actual_labels)):
+        if predicted_labels[i] == actual_labels[i]:
+            print(f'Success: Correctly classified {actual_labels[i]}, a subject from the training data set')
+            success += 1
+        elif (actual_labels[i] not in training_subjects) and (predicted_labels[i] not in training_subjects):
+            if (actual_labels[i] not in new_subjects_ids):
+                new_subjects_ids[actual_labels[i]] = predicted_labels[i]
+                print(f'Success: {actual_labels[i]} was seen for the first time, and was given the id {predicted_labels[i]}')
+                success += 1
+            elif predicted_labels[i] == new_subjects_ids[actual_labels[i]]:
+                print(f'Success: Classified {actual_labels[i]} with the correct id ({new_subjects_ids[actual_labels[i]]})')
+                success += 1
+            else:
+                print(f'Failure: Classified {actual_labels[i]} with the incorrect id ({predicted_labels[i]})')
+        else:
+            print(f'Failure: Misclassified {actual_labels[i]} as {predicted_labels[i]}')
+    print(f'SUCCESS RATE: {success / len(actual_labels)}')
+
 def main():
+    ## Small data set from AT&T that is well suited for Eigenfaces.
     # olivetti_faces = fetch_olivetti_faces()
     # training_data, test_data, training_labels, test_labels = train_test_split(olivetti_faces['data'], olivetti_faces['target'], test_size = 0.2, random_state = 17)
     
+    ## A more realistic data set, the main one used in this project.
     training_data, training_labels = get_dataset('trainingDataset')
     test_data, test_labels = get_dataset('testingDataset')
 
@@ -58,9 +82,20 @@ def main():
     face_classifier.train(training_data, training_labels, 0.95)
     predicted_labels = face_classifier.classify(test_data)
 
+    ## Evaluation of the results.
     print(get_accuracy(test_labels, predicted_labels))
     # print_classification_info(test_labels, predicted_labels)
     # plot_confusion_matrix(test_labels, predicted_labels)
+
+
+    ## Testing Dynamic Classification
+    # training_data, training_labels = get_dataset('trainingDataset')
+    # test_data, test_labels = get_dataset('testingDatasetExtended') # get_dataset('excludedSubjectsDataset')
+
+    # face_classifier = FaceClassifier()
+    # face_classifier.train(training_data, training_labels, 0.95)
+    # predicted_labels = face_classifier.classify_dynamically(test_data, 3500)
+    # print_dynamic_classification_info(test_labels, predicted_labels, training_labels)
 
 if __name__ == "__main__":
     main()

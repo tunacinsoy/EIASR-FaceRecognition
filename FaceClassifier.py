@@ -2,13 +2,14 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
+import uuid
 
 class FaceClassifier:
     def __init__(self):
         self.average_face_training = None
         self.eigenfaces = None
-        self.training_faces_weights = None
-        self.training_faces_labels = None
+        self.stored_face_weights = None
+        self.stored_face_labels = None
 
     # Displays a face vector as an image.
     def visualize_face(face_vector):
@@ -54,16 +55,16 @@ class FaceClassifier:
         # Each column is a principal components, in this case, an eigenface. Keep as many columns as num_principal_components.
         return eigenvectors[:, :num_principal_components]
     
-    # Gets the weights of each face, in other words the multidimensional points that represent the faces.
-    def __get_weights(self, face_matrix):
+    # Calculates the weights of each face, in other words the multidimensional points that represent the faces.
+    def __calculate_weights(self, face_matrix):
         weights = []
         for index in range(len(face_matrix)):
             face = face_matrix[index, :]
-            weights.append(self.__get_single_set_of_weights(face))
+            weights.append(self.__calculate_single_set_of_weights(face))
 
         return weights
     
-    def __get_single_set_of_weights(self, face):
+    def __calculate_single_set_of_weights(self, face):
         face_centered = face - self.average_face_training
         current_weights = np.matmul(face_centered, self.eigenfaces)
 
@@ -72,16 +73,40 @@ class FaceClassifier:
     def train(self, face_matrix, labels, threshold):
         self.average_face_training = self.__get_average_face_vector(face_matrix)
         self.eigenfaces = self.__get_eigenfaces(face_matrix, threshold)
-        self.training_faces_weights = self.__get_weights(face_matrix)
-        self.training_faces_labels = labels
+        self.stored_face_weights = self.__calculate_weights(face_matrix)
+        self.stored_face_labels = labels.copy()
 
+    # Each face that is provided as input is given the label of the training face with the most similar set of weights.
     def classify(self, face_matrix):
         predicted_labels = []
         for index in range(len(face_matrix)):
-            current_set_of_weights = self.__get_single_set_of_weights(face_matrix[index, :])
-            distances = cdist(current_set_of_weights.reshape(1, -1), self.training_faces_weights)
+            current_set_of_weights = self.__calculate_single_set_of_weights(face_matrix[index, :])
+            distances = cdist(current_set_of_weights.reshape(1, -1), self.stored_face_weights)
             nearest_neighbor_index = np.argmin(distances)
-            predicted_label = self.training_faces_labels[nearest_neighbor_index]
+            predicted_label = self.stored_face_labels[nearest_neighbor_index]
+            predicted_labels.append(predicted_label)
+
+        return predicted_labels
+    
+    # For each face provided as input, it is checked if the distance between the computed weights of the input face, 
+    # and the nearest set of weights are within a specified distance. If it is, the input face is given the label of the face with the most similar weights.
+    # Otherwise, the input face is considered to belong to a new subject and is labeled with a unique id. 
+    # The calculated set of weights, and the new label are then stored, together with the weights and labels of the training faces, and are used when classifying subsequent faces.
+    def classify_dynamically(self, face_matrix, max_nearest_neighbor_distance):
+        predicted_labels = []
+        for index in range(len(face_matrix)):
+            current_set_of_weights = self.__calculate_single_set_of_weights(face_matrix[index, :])
+            distances = cdist(current_set_of_weights.reshape(1, -1), self.stored_face_weights)
+            nearest_neighbor_distance = np.min(distances)
+            
+            if (nearest_neighbor_distance <= max_nearest_neighbor_distance):
+                nearest_neighbor_index = np.argmin(distances)
+                predicted_label = self.stored_face_labels[nearest_neighbor_index]
+            else:
+                new_label = uuid.uuid4()
+                self.stored_face_weights.append(current_set_of_weights)
+                self.stored_face_labels.append(new_label)
+                predicted_label = new_label
             predicted_labels.append(predicted_label)
 
         return predicted_labels
