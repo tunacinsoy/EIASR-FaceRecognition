@@ -24,7 +24,6 @@ def split_data_without_subfolders(source_directory, train_directory, test_direct
             for file in train_files:
                 shutil.copy(os.path.join(individual_path, file), os.path.join(train_directory, file))
 
-# Replace these paths with your directories
 source_directory = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\outputsOfEnhanced"
 train_directory = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\trainingDataset"
 test_directory = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\testingDataset"

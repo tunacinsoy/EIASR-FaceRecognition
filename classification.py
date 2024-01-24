@@ -71,12 +71,12 @@ def print_dynamic_classification_info(actual_labels, predicted_labels, training_
 
 def main():
     ## Small data set from AT&T that is well suited for Eigenfaces.
-    # olivetti_faces = fetch_olivetti_faces()
-    # training_data, test_data, training_labels, test_labels = train_test_split(olivetti_faces['data'], olivetti_faces['target'], test_size = 0.2, random_state = 17)
+    olivetti_faces = fetch_olivetti_faces()
+    training_data, test_data, training_labels, test_labels = train_test_split(olivetti_faces['data'], olivetti_faces['target'], test_size = 0.2, random_state = 17)
     
     ## A more realistic data set, the main one used in this project.
-    training_data, training_labels = get_dataset('trainingDataset')
-    test_data, test_labels = get_dataset('testingDataset')
+    # training_data, training_labels = get_dataset('trainingDataset')
+    # test_data, test_labels = get_dataset('testingDataset')
 
     face_classifier = FaceClassifier()
     face_classifier.train(training_data, training_labels, 0.95)
@@ -85,7 +85,7 @@ def main():
     ## Evaluation of the results.
     print(get_accuracy(test_labels, predicted_labels))
     # print_classification_info(test_labels, predicted_labels)
-    # plot_confusion_matrix(test_labels, predicted_labels)
+    plot_confusion_matrix(test_labels, predicted_labels)
 
 
     ## Testing Dynamic Classification

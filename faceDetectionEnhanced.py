@@ -23,19 +23,20 @@ def detect_edges(image):
 
     return edge_image
 
-def skin_color_segmentation(image):
-    # Convert to YCbCr color space
-    ycbcr_image = image.convert('YCbCr')
-    ycbcr_array = np.array(ycbcr_image)
+def detect_skin(image):
+    hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-    # Define skin color range in YCbCr
-    min_YCbCr = np.array([0, 133, 77], np.uint8)
-    max_YCbCr = np.array([235, 173, 127], np.uint8)
+    # Define skin color range in HSV
+    lower_skin = np.array([0, 48, 80], dtype=np.uint8)
+    upper_skin = np.array([20, 255, 255], dtype=np.uint8)
 
-    # Create a mask for skin color
-    skin_mask = cv2.inRange(ycbcr_array, min_YCbCr, max_YCbCr)
+    # Threshold the HSV image to get only skin colors
+    mask = cv2.inRange(hsv_image, lower_skin, upper_skin)
 
-    return skin_mask
+    # Bitwise-AND mask and original image
+    skin = cv2.bitwise_and(image, image, mask=mask)
+
+    return skin
 
 def equalize_histogram(image):
     gray_image = image.convert('L')
@@ -123,45 +124,64 @@ def crop_and_resize_face(original_image, face_mask, output_size=(64, 64)):
     
     return resized_face_bw
 
+def display_image(image, title, subplot=None):
+    if subplot is None:
+        plt.imshow(image, cmap='gray')
+    else:
+        plt.subplot(*subplot)
+        plt.imshow(image, cmap='gray')
+    plt.title(title)
+    plt.axis('off')
+
 # Directory path with a pattern to match all images
-pattern = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\subjects\\Vladimir_Putin\\*.jpg"
+pattern = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\subjects\\Kofi_Annan\\*.jpg"
 
 for image_path in glob.glob(pattern):
 
     # Loading the image
     image = Image.open(image_path)
 
-    # Applying histogram equalization
-    equalized_image = equalize_histogram(image)
+    # Display original image
+    display_image(np.array(image), "Original Image", (3, 3, 1))
 
-    # Continuing with skin color segmentation
-    skin_mask = skin_color_segmentation(equalized_image)
+    # Starting with skin color segmentation
+    image2 = cv2.imread(image_path)
+    skin_mask = detect_skin(image2)
 
     # Converting skin mask to PIL Image for further processing
     skin_mask_image = Image.fromarray(skin_mask)
+    display_image(skin_mask, "Skin Mask", (3, 3, 2))
+
+    # Applying histogram equalization
+    equalized_image = equalize_histogram(skin_mask_image)
+    display_image(np.array(equalized_image), "Equalized Image", (3, 3, 3))
 
     # Proceeding with edge detection
-    edge_detected_array = np.array(detect_edges(skin_mask_image))
+    edge_detected_array = np.array(detect_edges(equalized_image))
+    display_image(edge_detected_array, "Edge Detection", (3, 3, 4))
 
     # Applying threshold to the edge-detected numpy array
     binary_array = apply_threshold(edge_detected_array, block_size=35, C=5)
+    binary_image = Image.fromarray(binary_array * 255)
+    display_image(binary_array, "Threshold Applied", (3, 3, 5))
 
     # Applying morphological operations to the binary numpy array
     morph_array = morphological_operations(binary_array, iterations=2)
+    morph_image = Image.fromarray(morph_array * 255)
+    display_image(morph_array, "Morphological Operations", (3, 3, 6))
 
-    # Converting numpy arrays back to PIL images for display
-    binary_image = Image.fromarray(binary_array * 255)  # Scale binary image back to [0, 255]
-    morph_image = Image.fromarray(morph_array * 255)  # Scale morphological image back to [0, 255]
+    # Applying the segmentation to find the face regions
+    possible_face_regions = segment_face(morph_array)
+    face_mask_image = Image.fromarray((possible_face_regions * 255).astype('uint8'))
+    display_image(possible_face_regions, "Face Mask", (3, 3, 7))
 
-    # Applying the segmentation to find the face region
-    face_mask = segment_face(morph_array)
+    # Resizing and cropping the image
+    resized_face_bw = crop_and_resize_face(image, possible_face_regions)
+    display_image(np.array(resized_face_bw), "Cropped and Resized Face", (3, 3, 8))
 
-    # Converting the face mask back to PIL image for display
-    face_mask_image = Image.fromarray((face_mask * 255).astype('uint8'))
-
-    # and `face_mask` is the binary mask of the face region
-    resized_face_bw = crop_and_resize_face(image, face_mask)
-
+    # Saving and showing the results
+    plt.show()
+    
     # Saving the output image
 
     # Extract the base name without the extension
@@ -172,7 +192,7 @@ for image_path in glob.glob(pattern):
     new_name = "{}_bw{}".format(name, ext)
 
     # Specifying the directory where you want to save the new image
-    output_directory = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\outputsOfEnhanced\\Vladimir_Putin"
+    output_directory = "C:\\Users\\tcins\\vscode-workspace\\EIASR-FaceRecognition\\outputsOfEnhanced\\Kofi_Annan"
     new_image_path = os.path.join(output_directory, new_name)
 
     # Saving the image using the new path
